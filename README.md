@@ -49,3 +49,55 @@ Created by Volker Strobel - volker.strobel87@gmail.com
 If you use this code in academic papers, please cite this repository via Zenodo (http://doi.org/10.5281/zenodo.1218409):
 
 Volker Strobel. (2018, April 14). Pold87/academic-keyword-occurrence: First release (Version v1.0.0). Zenodo. http://doi.org/10.5281/zenodo.1218409
+
+---
+
+## Extensions (this fork)
+
+Two additional scripts for multi-term search and visualization.
+
+### `multi_term_search.py` — search across multiple terms
+
+Runs multiple queries year-by-year and writes a single CSV with one column per term.
+Uses `as_sdt=1,5` (Engineering/CS/Mathematics, no patents). Stops immediately if rate-limited rather than recording incorrect counts.
+
+```bash
+python multi_term_search.py \
+    --terms '"pluralistic alignment"' '"pluralistic AI"' '"overton pluralism"' \
+    --start 2021 --end 2026 \
+    --out data/results_by_term.csv
+```
+
+| flag | default | description |
+|------|---------|-------------|
+| `--terms` | required | Search terms. Wrap phrases in inner quotes. |
+| `--start` | required | Start year (inclusive) |
+| `--end` | required | End year (inclusive) |
+| `--delay` | `3.0` | Seconds between requests. Increase if rate-limited. |
+| `--out` | `data/results_by_term.csv` | Output CSV path |
+
+### `plot_trends.py` — stacked area chart
+
+Reads the CSV from `multi_term_search.py` and produces a stacked area chart.
+
+```bash
+python plot_trends.py data/results_by_term.csv \
+    --partial-year 2026 \
+    --title "Pluralistic Alignment Research — Google Scholar Counts" \
+    --out figures/scholar_trends.png
+```
+
+| flag | default | description |
+|------|---------|-------------|
+| `csv` | required | Path to results CSV |
+| `--partial-year` | None | Marks this year with `*` and adds a footnote |
+| `--title` | `"Google Scholar Counts by Search Term"` | Plot title |
+| `--out` | `figures/scholar_trends.png` | Output image path |
+
+### Rate limiting
+
+Google Scholar blocks repeated requests from the same IP. Practical limits:
+- ~30–40 requests per session before hitting a block
+- Blocks typically clear within a few hours
+- Using a VPN to rotate your IP clears blocks immediately
+- Do not reduce `--delay` below `2.0`

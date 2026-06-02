@@ -1,0 +1,75 @@
+"""Plot a stacked area chart from multi_term_search.py output.
+
+Usage:
+    python plot_trends.py data/results_by_term.csv \\
+        --partial-year 2026 \\
+        --title "Pluralistic Alignment Research — Google Scholar Counts" \\
+        --out figures/scholar_trends.png
+"""
+
+import argparse
+import csv
+
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+
+def load_csv(path):
+    with open(path, newline="") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    years = [int(r["year"]) for r in rows]
+    terms = [k for k in rows[0].keys() if k != "year"]
+    data = {term: [int(r[term]) for r in rows] for term in terms}
+    return years, terms, data
+
+
+def plot(years, terms, data, partial_year, out, title):
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    colors = plt.cm.tab10.colors[: len(terms)]
+    values = [data[t] for t in terms]
+    labels = [t.strip('"') for t in terms]
+
+    ax.stackplot(years, values, labels=labels, colors=colors, alpha=0.85)
+
+    tick_labels = [str(y) if y != partial_year else f"{y}*" for y in years]
+    ax.set_xticks(years)
+    ax.set_xticklabels(tick_labels)
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Google Scholar Results (CS/Engineering, excl. patents)")
+    ax.set_title(title)
+    ax.legend(fontsize=8, loc="upper left")
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
+    ax.grid(axis="y", alpha=0.3)
+
+    if partial_year:
+        fig.text(
+            0.99, 0.01, f"* Jan–Jun {partial_year} only",
+            ha="right", va="bottom", fontsize=8, color="dimgray",
+        )
+
+    plt.tight_layout()
+    plt.savefig(out, dpi=150)
+    print(f"Saved: {out}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Stacked area chart of multi-term Scholar results",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument("csv", help="Path to results_by_term.csv")
+    parser.add_argument(
+        "--partial-year", type=int, default=None,
+        help="Mark this year with * and add a 'partial year' footnote"
+    )
+    parser.add_argument("--out", default="figures/scholar_trends.png",
+                        help="Output image path (default: figures/scholar_trends.png)")
+    parser.add_argument("--title", default="Google Scholar Counts by Search Term",
+                        help="Plot title")
+    args = parser.parse_args()
+
+    years, terms, data = load_csv(args.csv)
+    plot(years, terms, data, args.partial_year, args.out, args.title)
