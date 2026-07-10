@@ -17,14 +17,39 @@ Notes:
 
 import argparse
 import csv
+import re
+import subprocess
 import sys
 import time
+import urllib.parse
 
-from extract_occurrences import get_num_results
+from bs4 import BeautifulSoup
+
+
+def get_num_results(search_term, start_date, end_date):
+    """Fetch Scholar result count via curl (IPv4 only, VPN-safe)."""
+    query_params = {"q": search_term, "as_ylo": start_date, "as_yhi": end_date}
+    url = "https://scholar.google.com/scholar?as_vis=1&hl=en&as_sdt=1,5&" + urllib.parse.urlencode(query_params)
+    cmd = (
+        f'curl -s --max-time 15 -A '
+        f'"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36" '
+        f'"{url}"'
+    )
+    result = subprocess.run(cmd, shell=True, capture_output=True, timeout=20)
+    if result.returncode != 0:
+        return None, False
+    html = result.stdout
+    if b"captcha" in html.lower() or b"unusual traffic" in html.lower():
+        return None, False
+    soup = BeautifulSoup(html, "html.parser")
+    div_results = soup.find("div", {"id": "gs_ab_md"})
+    if div_results is not None:
+        res = re.findall(r"(\d+).?(\d+)?.?(\d+)?\s", div_results.text)
+        return ("0" if res == [] else "".join(res[0])), True
+    return None, False
 
 
 def safe_get(term, year):
-    """Wraps get_num_results with a try/except for network errors."""
     try:
         count, success = get_num_results(term, year, year)
         return (int(count) if success else None), success
