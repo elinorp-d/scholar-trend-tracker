@@ -2,7 +2,7 @@
 
 Usage:
     python plot_trends.py data/results_by_term.csv \\
-        --partial-year 2026 \\
+        --partial-year 2026 --partial-label Jul \\
         --title "Pluralistic Alignment Research — Google Scholar Counts" \\
         --out figures/scholar_trends.png
 """
@@ -24,7 +24,7 @@ def load_csv(path):
     return years, terms, data
 
 
-def plot(years, terms, data, partial_year, out, title):
+def plot(years, terms, data, partial_year, partial_label, out, title):
     fig, ax = plt.subplots(figsize=(11, 6))
 
     colors = plt.cm.tab10.colors[: len(terms)]
@@ -45,7 +45,7 @@ def plot(years, terms, data, partial_year, out, title):
 
     if partial_year:
         fig.text(
-            0.99, 0.01, f"* Jan–Jun {partial_year} only",
+            0.99, 0.01, f"* Jan–{partial_label} {partial_year} only",
             ha="right", va="bottom", fontsize=8, color="dimgray",
         )
 
@@ -65,6 +65,10 @@ if __name__ == "__main__":
         "--partial-year", type=int, default=None,
         help="Mark this year with * and add a 'partial year' footnote"
     )
+    parser.add_argument(
+        "--partial-label", default="Jun",
+        help="End month for the partial-year footnote, e.g. 'Jul' (default: Jun)"
+    )
     parser.add_argument("--out", default="figures/scholar_trends.png",
                         help="Output image path (default: figures/scholar_trends.png)")
     parser.add_argument("--title", default="Google Scholar Counts by Search Term",
@@ -72,4 +76,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     years, terms, data = load_csv(args.csv)
-    plot(years, terms, data, args.partial_year, args.out, args.title)
+    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title)

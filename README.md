@@ -95,13 +95,15 @@ python plot_trends.py data/results_by_term.csv \
 |------|---------|-------------|
 | `csv` | required | Path to results CSV |
 | `--partial-year` | None | Marks this year with `*` and adds a partial-year footnote |
+| `--partial-label` | `Jun` | End month shown in the partial-year footnote, e.g. `Jul` |
 | `--title` | `"Google Scholar Counts by Search Term"` | Plot title |
 | `--out` | `figures/scholar_trends.png` | Output image path |
 
 ### Included dataset
 
 `data/pluralistic_alignment_2021_2026.csv` contains counts for six pluralistic
-alignment search terms (2021–2026), collected June 2026.
+alignment search terms (2021–2026), last updated July 2026 (2026 figures are
+partial, through mid-July).
 
 ![Pluralistic alignment Google Scholar counts](figures/pluralistic_alignment_2021_2026.png)
 
