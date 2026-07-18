@@ -24,8 +24,10 @@ def load_csv(path):
     return years, terms, data
 
 
-def plot(years, terms, data, partial_year, partial_label, out, title):
-    fig, ax = plt.subplots(figsize=(11, 6))
+def plot(years, terms, data, partial_year, partial_label, out, title, figsize=(11, 6),
+         fontsize=10):
+    plt.rcParams.update({"font.size": fontsize})
+    fig, ax = plt.subplots(figsize=figsize)
 
     colors = plt.cm.tab10.colors[: len(terms)]
     values = [data[t] for t in terms]
@@ -37,16 +39,17 @@ def plot(years, terms, data, partial_year, partial_label, out, title):
     ax.set_xticks(years)
     ax.set_xticklabels(tick_labels)
     ax.set_xlabel("Year")
-    ax.set_ylabel("Google Scholar Results (CS/Engineering, excl. patents)")
-    ax.set_title(title)
-    ax.legend(fontsize=8, loc="upper left")
+    ax.set_ylabel("Number of Papers")
+    if title:
+        ax.set_title(title)
+    ax.legend(fontsize=fontsize - 2, loc="upper left")
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
     ax.grid(axis="y", alpha=0.3)
 
     if partial_year:
         fig.text(
             0.99, 0.01, f"* Jan–{partial_label} {partial_year} only",
-            ha="right", va="bottom", fontsize=8, color="dimgray",
+            ha="right", va="bottom", fontsize=fontsize - 2, color="dimgray",
         )
 
     plt.tight_layout()
@@ -73,7 +76,16 @@ if __name__ == "__main__":
                         help="Output image path (default: figures/scholar_trends.png)")
     parser.add_argument("--title", default="Google Scholar Counts by Search Term",
                         help="Plot title")
+    parser.add_argument(
+        "--figsize", nargs=2, type=float, metavar=("WIDTH", "HEIGHT"),
+        default=[11, 6], help="Figure size in inches (default: 11 6)"
+    )
+    parser.add_argument(
+        "--fontsize", type=float, default=10,
+        help="Base font size; legend and footnote are 2pt smaller (default: 10)"
+    )
     args = parser.parse_args()
 
     years, terms, data = load_csv(args.csv)
-    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title)
+    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title,
+         figsize=tuple(args.figsize), fontsize=args.fontsize)
