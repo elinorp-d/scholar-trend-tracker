@@ -96,7 +96,9 @@ python plot_trends.py data/results_by_term.csv \
 | `csv` | required | Path to results CSV |
 | `--partial-year` | None | Marks this year with `*` and adds a partial-year footnote |
 | `--partial-label` | `Jun` | End month shown in the partial-year footnote, e.g. `Jul` |
-| `--title` | `"Google Scholar Counts by Search Term"` | Plot title |
+| `--title` | `"Google Scholar Counts by Search Term"` | Plot title; pass `""` to omit (e.g. for paper figures) |
+| `--figsize` | `11 6` | Figure width and height in inches |
+| `--fontsize` | `10` | Base font size; legend and footnote are 2pt smaller |
 | `--out` | `figures/scholar_trends.png` | Output image path |
 
 ### Included dataset
