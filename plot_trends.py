@@ -24,7 +24,21 @@ def load_csv(path):
     return years, terms, data
 
 
-def plot(years, terms, data, partial_year, partial_label, out, title):
+def stacked_total_at(years, data, x):
+    """Linear interpolation of the stacked total at fractional year x."""
+    totals = [sum(data[t][i] for t in data) for i in range(len(years))]
+    if x <= years[0]:
+        return totals[0]
+    if x >= years[-1]:
+        return totals[-1]
+    for i in range(len(years) - 1):
+        if years[i] <= x <= years[i + 1]:
+            frac = (x - years[i]) / (years[i + 1] - years[i])
+            return totals[i] + frac * (totals[i + 1] - totals[i])
+    return totals[-1]
+
+
+def plot(years, terms, data, partial_year, partial_label, out, title, annotate=None):
     fig, ax = plt.subplots(figsize=(11, 6))
 
     colors = plt.cm.tab10.colors[: len(terms)]
@@ -42,6 +56,18 @@ def plot(years, terms, data, partial_year, partial_label, out, title):
     ax.legend(fontsize=8, loc="upper left")
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
     ax.grid(axis="y", alpha=0.3)
+
+    if annotate:
+        label, x_pos = annotate
+        y_pos = stacked_total_at(years, data, x_pos)
+        y_max = max(sum(data[t][i] for t in data) for i in range(len(years)))
+        ax.annotate(
+            label,
+            xy=(x_pos, y_pos),
+            xytext=(x_pos - 0.55, y_pos + 0.35 * y_max),
+            fontsize=9, color="black", ha="center",
+            arrowprops=dict(arrowstyle="->", color="black", lw=1.2),
+        )
 
     if partial_year:
         fig.text(
@@ -73,7 +99,13 @@ if __name__ == "__main__":
                         help="Output image path (default: figures/scholar_trends.png)")
     parser.add_argument("--title", default="Google Scholar Counts by Search Term",
                         help="Plot title")
+    parser.add_argument(
+        "--annotate", nargs=2, metavar=("LABEL", "YEAR"), default=None,
+        help='Annotate an event with an arrow, e.g. --annotate "Roadmap released" 2024.12'
+    )
     args = parser.parse_args()
 
+    annotate = (args.annotate[0], float(args.annotate[1])) if args.annotate else None
     years, terms, data = load_csv(args.csv)
-    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title)
+    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title,
+         annotate=annotate)
