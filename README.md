@@ -104,8 +104,8 @@ python plot_trends.py data/results_by_term.csv \
 ### Included dataset
 
 `data/pluralistic_alignment_2021_2026.csv` contains counts for six pluralistic
-alignment search terms (2021–2026), last updated July 2026 (2026 figures are
-partial, through mid-July).
+alignment search terms, 2021 to 2026, last updated October 2026. The 2026
+figures are partial, through mid-October.
 
 ![Pluralistic alignment Google Scholar counts](figures/pluralistic_alignment_2021_2026.png)
 
