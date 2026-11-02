@@ -104,8 +104,11 @@ python plot_trends.py data/results_by_term.csv \
 ### Included dataset
 
 `data/pluralistic_alignment_2021_2026.csv` contains counts for six pluralistic
-alignment search terms, 2021 to 2026, last updated October 2026. The 2026
-figures are partial, through mid-October.
+alignment search terms, 2021 to 2026, last updated November 2026. The 2026
+figures are partial, through the end of October. We collected the November 2026
+counts by hand in a browser, because the script was getting reduced counts at
+that time (see below). The 2021 to 2025 counts are from the October 2026 script
+run.
 
 ![Pluralistic alignment Google Scholar counts](figures/pluralistic_alignment_2021_2026.png)
 
@@ -116,3 +119,16 @@ Google Scholar blocks repeated requests from the same IP. Practical limits:
 - Blocks typically clear within a few hours
 - Switching VPN exit node clears blocks immediately
 - Do not reduce `--delay` below `2.0`
+
+### Reduced counts without a CAPTCHA
+
+Google Scholar sometimes gives scripts much lower counts than it shows in a
+browser, without showing a CAPTCHA. The script cannot detect this, so it saves
+the wrong numbers. In November 2026, the script got 18 results for
+`"pluralistic alignment"` in 2025, while a browser showed about 428.
+
+After each run, compare the counts for past years with the previous run.
+Counts for finished years change very little between runs. If they drop
+sharply, open one of the queries in a browser and compare the count. If the
+browser count is much higher, do not use the script's output. Collect the
+counts by hand instead.
