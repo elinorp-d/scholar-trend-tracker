@@ -86,7 +86,7 @@ Reads the CSV produced by `multi_term_search.py` and produces a stacked area cha
 
 ```bash
 python plot_trends.py data/results_by_term.csv \
-    --partial-year 2026 \
+    --partial-year 2026 --partial-note "2026 counts as of November 2, 2026" \
     --title "Pluralistic Alignment Research — Google Scholar Counts" \
     --out figures/scholar_trends.png
 ```
@@ -95,7 +95,7 @@ python plot_trends.py data/results_by_term.csv \
 |------|---------|-------------|
 | `csv` | required | Path to results CSV |
 | `--partial-year` | None | Marks this year with `*` and adds a partial-year footnote |
-| `--partial-label` | `Jun` | End month shown in the partial-year footnote, e.g. `Jul` |
+| `--partial-note` | `"<year> is a partial year"` | Footnote text for the partial year, e.g. `"2026 counts as of November 2, 2026"` |
 | `--title` | `"Google Scholar Counts by Search Term"` | Plot title; pass `""` to omit (e.g. for paper figures) |
 | `--figsize` | `11 6` | Figure width and height in inches |
 | `--fontsize` | `10` | Base font size; legend and footnote are 2pt smaller |
@@ -104,11 +104,10 @@ python plot_trends.py data/results_by_term.csv \
 ### Included dataset
 
 `data/pluralistic_alignment_2021_2026.csv` contains counts for six pluralistic
-alignment search terms, 2021 to 2026, last updated November 2026. The 2026
-figures are partial, through the end of October. We collected the November 2026
-counts by hand in a browser, because the script was getting reduced counts at
-that time (see below). The 2021 to 2025 counts are from the October 2026 script
-run.
+alignment search terms, 2021 to 2026. We collected the 2026 counts by hand in a
+browser on November 2, 2026, because the script was getting reduced counts at
+that time (see below). The 2021 to 2025 counts are from the script run on
+October 16, 2026.
 
 ![Pluralistic alignment Google Scholar counts](figures/pluralistic_alignment_2021_2026.png)
 

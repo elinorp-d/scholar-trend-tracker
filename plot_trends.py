@@ -2,7 +2,7 @@
 
 Usage:
     python plot_trends.py data/results_by_term.csv \\
-        --partial-year 2026 --partial-label Jul \\
+        --partial-year 2026 --partial-note "2026 counts as of November 2, 2026" \\
         --title "Pluralistic Alignment Research — Google Scholar Counts" \\
         --out figures/scholar_trends.png
 """
@@ -24,7 +24,7 @@ def load_csv(path):
     return years, terms, data
 
 
-def plot(years, terms, data, partial_year, partial_label, out, title, figsize=(11, 6),
+def plot(years, terms, data, partial_year, partial_note, out, title, figsize=(11, 6),
          fontsize=10):
     plt.rcParams.update({"font.size": fontsize})
     fig, ax = plt.subplots(figsize=figsize)
@@ -47,8 +47,9 @@ def plot(years, terms, data, partial_year, partial_label, out, title, figsize=(1
     ax.grid(axis="y", alpha=0.3)
 
     if partial_year:
+        note = partial_note or f"{partial_year} is a partial year"
         fig.text(
-            0.99, 0.01, f"* Jan–{partial_label} {partial_year} only",
+            0.99, 0.01, f"* {note}",
             ha="right", va="bottom", fontsize=fontsize - 2, color="dimgray",
         )
 
@@ -69,8 +70,8 @@ if __name__ == "__main__":
         help="Mark this year with * and add a 'partial year' footnote"
     )
     parser.add_argument(
-        "--partial-label", default="Jun",
-        help="End month for the partial-year footnote, e.g. 'Jul' (default: Jun)"
+        "--partial-note", default=None,
+        help="Footnote text for the partial year, e.g. '2026 counts as of November 2, 2026'"
     )
     parser.add_argument("--out", default="figures/scholar_trends.png",
                         help="Output image path (default: figures/scholar_trends.png)")
@@ -87,5 +88,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     years, terms, data = load_csv(args.csv)
-    plot(years, terms, data, args.partial_year, args.partial_label, args.out, args.title,
+    plot(years, terms, data, args.partial_year, args.partial_note, args.out, args.title,
          figsize=tuple(args.figsize), fontsize=args.fontsize)
